@@ -1,4 +1,4 @@
-package com.yourcompany.native_speech_to_text
+package com.example.native_speech_to_text
 
 import android.app.Activity
 import androidx.annotation.NonNull
