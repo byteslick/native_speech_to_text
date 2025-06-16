@@ -7,7 +7,9 @@ import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.collect
+import SpeechRecognizerManager
 
 class NativeSpeechToTextPlugin: FlutterPlugin, MethodChannel.MethodCallHandler, EventChannel.StreamHandler {
     private lateinit var channel: MethodChannel
