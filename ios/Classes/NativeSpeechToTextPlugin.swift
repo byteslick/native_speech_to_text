@@ -12,25 +12,54 @@ public class NativeSpeechToTextPlugin: NSObject, FlutterPlugin, FlutterStreamHan
         registrar.addMethodCallDelegate(instance, channel: channel)
         eventChannel.setStreamHandler(instance)
     }
-
+    
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         switch call.method {
         case "resetTranscript":
-            speechRecognizer?.resetTranscript()
-            result(nil)
-        case "startTranscribing":
-            speechRecognizer?.startTranscribing()
-            _ = speechRecognizer?.receiveTranscriptUpdates { [weak self] transcript in
-                self?.eventSink?(transcript)
+            Task { @MainActor in
+                self.speechRecognizer?.resetTranscript()
+                result(nil)
             }
-            result(nil)
+            
+        case "startTranscribing":
+            Task { @MainActor in
+                self.speechRecognizer?.startTranscribing()
+                _ = await self.speechRecognizer?.receiveTranscriptUpdates { [weak self] transcript in
+                    self?.eventSink?(transcript)
+                }
+                result(nil)
+            }
+            
         case "stopTranscribing":
-            speechRecognizer?.stopTranscribing()
-            result(nil)
+            Task { @MainActor in
+                self.speechRecognizer?.stopTranscribing()
+                result(nil)
+            }
+            
         default:
             result(FlutterMethodNotImplemented)
         }
     }
+
+
+//    public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+//        switch call.method {
+//        case "resetTranscript":
+//            speechRecognizer?.resetTranscript()
+//            result(nil)
+//        case "startTranscribing":
+//            speechRecognizer?.startTranscribing()
+//            _ = speechRecognizer?.receiveTranscriptUpdates { [weak self] transcript in
+//                self?.eventSink?(transcript)
+//            }
+//            result(nil)
+//        case "stopTranscribing":
+//            speechRecognizer?.stopTranscribing()
+//            result(nil)
+//        default:
+//            result(FlutterMethodNotImplemented)
+//        }
+//    }
 
     // Event channel handlers
     public func onListen(withArguments arguments: Any?, eventSink events: @escaping FlutterEventSink) -> FlutterError? {
